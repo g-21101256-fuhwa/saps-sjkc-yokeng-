@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, print-scale: 1.0">
+    <title>Sistem SAPS - SJKC Yok Eng, Pasir Mas | 12 Kelas (Tabah & Jujur)</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f0f4f9;
+            color: #1e2a41;
+            padding: 20px;
+        }
+        .dashboard-container {
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+        .top-bar {
+            background: #0a2b4e;
+            color: white;
+            border-radius: 24px;
+            padding: 1rem 2rem;
+            margin-bottom: 1.8rem;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+        }
+        .school-title h1 { font-size: 1.6rem; font-weight: 700; }
+        .school-title p { font-size: 0.85rem; opacity: 0.8; }
+        .academic-controls {
+            background: rgba(255,255,255,0.15);
+            padding: 8px 16px;
+            border-radius: 40px;
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .academic-controls select, .academic-controls button {
+            padding: 6px 14px;
+            border-radius: 32px;
+            border: none;
+            font-weight: 500;
+            cursor: pointer;
+        }
+        .class-selector {
+            background: #1e3a5f;
+            padding: 8px 20px;
+            border-radius: 40px;
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            flex-wrap: wrap;
+            margin-bottom: 1.5rem;
+        }
+        .class-selector select {
+            background: white;
+            padding: 8px 16px;
+            border-radius: 32px;
+        }
+        .role-selector {
+            background: white;
+            padding: 6px 12px;
+            border-radius: 40px;
+            color: #0a2b4e;
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+        .role-selector select, .role-selector button {
+            background: #eef2ff;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 32px;
+            cursor: pointer;
+        }
+        .role-selector button { background: #0a2b4e; color: white; }
+        .stats-grid {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin-bottom: 28px;
+        }
+        .stat-card {
+            background: white;
+            border-radius: 24px;
+            padding: 1rem 1.6rem;
+            flex: 1;
+            min-width: 180px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.02);
+            border: 1px solid #e2e8f0;
+        }
+        .stat-card h3 { font-size: 0.85rem; text-transform: uppercase; color: #4a5b6e; }
+        .stat-card .value { font-size: 2rem; font-weight: 800; color: #0a2b4e; }
+        .action-bar {
+            background: white;
+            border-radius: 20px;
+            padding: 1rem 1.5rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            align-items: center;
+            border: 1px solid #e2edf7;
+        }
+        .btn {
+            padding: 8px 18px;
+            border-radius: 40px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: 0.2s;
+        }
+        .btn-primary { background: #0a2b4e; color: white; }
+        .btn-secondary { background: #eef2ff; color: #0a2b4e; border: 1px solid #cbd5e1; }
+        .btn-danger { background: #dc2626; color: white; }
+        .btn-warning { background: #f59e0b; color: white; }
+        .btn-success { background: #10b981; color: white; }
+        .table-wrapper {
+            background: white;
+            border-radius: 24px;
+            overflow-x: auto;
+            border: 1px solid #e2e8f0;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+        }
+        th {
+            background: #f8fafc;
+            padding: 14px 8px;
+            text-align: center;
+            font-weight: 700;
+            border-bottom: 2px solid #e2e8f0;
+        }
+        td {
+            padding: 10px 6px;
+            text-align: center;
+            border-bottom: 1px solid #eef2ff;
+        }
+        .student-name { font-weight: 600; text-align: left; }
+        .grade-badge {
+            font-weight: 700;
+            display: inline-block;
+            background: #f1f5f9;
+            padding: 2px 10px;
+            border-radius: 30px;
+            font-size: 0.75rem;
+        }
+        .footer-stats {
+            background: #f9fbfe;
+            padding: 16px;
+            margin-top: 20px;
+            border-radius: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 32px;
+            justify-content: space-between;
+        }
+        .subject-breakdown { flex: 2; min-width: 280px; }
+        .overall-widget {
+            flex: 1;
+            background: #eef3fc;
+            padding: 16px;
+            border-radius: 20px;
+        }
+        @media print {
+            body { background: white; padding: 0; }
+            .top-bar, .action-bar, .role-selector, .stats-grid, .no-print, .btn, select, button { display: none !important; }
+            .table-wrapper, table, .footer-stats { box-shadow: none; border: 1px solid #ccc; }
+        }
+        .session-badge, .class-badge {
+            background: #e0f2fe;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-left: 10px;
+        }
+    </style>
+</head>
+<body>
+<div class="dashboard-container">
+    <div class="top-bar">
+        <div class="school-title">
+            <h1>SJKC Yok Eng, Pasir Mas</h1>
+            <p>Sistem Analisis Prestasi Sekolah (SAPS) | Rekod Akademik</p>
+        </div>
+        <div class="academic-controls">
+            <span><i class="fas fa-calendar-alt"></i> Tahun:</span>
+            <select id="yearSelect">
+                <option value="2024">2024</option>
+                <option value="2025" selected>2025</option>
+                <option value="2026">2026</option>
+                <option value="2027">2027</option>
+            </select>
+            <span><i class="fas fa-file-alt"></i> Ujian:</span>
+            <select id="examTypeSelect">
+                <option value="mid">Ujian Pertengahan Semester</option>
+                <option value="final">Ujian Akhir Semester</option>
+            </select>
+            <button id="loadSessionBtn" class="btn-success" style="background:#10b981;color:white;border:none;"><i class="fas fa-folder-open"></i> Muat</button>
+        </div>
+        <div class="role-selector">
+            <span><i class="fas fa-user-shield"></i> Log Masuk:</span>
+            <select id="roleSelect">
+                <option value="admin">Pentadbir (Admin)</option>
+                <option value="subjectTeacher">Guru Mata Pelajaran</option>
+                <option value="classTeacher">Guru Kelas</option>
+            </select>
+            <button id="applyRoleBtn"><i class="fas fa-sync-alt"></i> Tukar</button>
+        </div>
+    </div>
+
+    <div class="class-selector">
+        <span><i class="fas fa-chalkboard"></i> Pilih Kelas:</span>
+        <select id="classSelect">
+            <option value="T1_Tabah">Tahun 1 - Tabah</option>
+            <option value="T1_Jujur">Tahun 1 - Jujur</option>
+            <option value="T2_Tabah">Tahun 2 - Tabah</option>
+            <option value="T2_Jujur">Tahun 2 - Jujur</option>
+            <option value="T3_Tabah">Tahun 3 - Tabah</option>
+            <option value="T3_Jujur">Tahun 3 - Jujur</option>
+            <option value="T4_Tabah">Tahun 4 - Tabah</option>
+            <option value="T4_Jujur">Tahun 4 - Jujur</option>
+            <option value="T5_Tabah">Tahun 5 - Tabah</option>
+            <option value="T5_Jujur">Tahun 5 - Jujur</option>
+            <option value="T6_Tabah">Tahun 6 - Tabah</option>
+            <option value="T6_Jujur">Tahun 6 - Jujur</option>
+        </select>
+        <button id="loadClassBtn" class="btn-secondary"><i class="fas fa-arrow-right"></i> Buka Kelas</button>
+        <span class="class-badge" id="activeClassDisplay">Kelas aktif: Tiada</span>
+    </div>
+
+    <div id="dashboardStats" class="stats-grid"></div>
+    <div id="actionBar" class="action-bar"></div>
+    <div class="table-wrapper">
+        <table id="mainTable">
+            <thead id="tableHeader"></thead>
+            <tbody id="tableBody"></tbody>
+        </table>
+    </div>
+    <div id="footerAnalysis" class="footer-stats"></div>
+</div>
+
+<script>
+    const subjects = ["BM", "BI", "BC", "SN", "MT", "SEJ"];
+    const subjectFull = { BM:"Bahasa Melayu", BI:"Bahasa Inggeris", BC:"Bahasa Cina", SN:"Sains", MT:"Matematik", SEJ:"Sejarah" };
+    
+    const classList = [
+        "T1_Tabah", "T1_Jujur", "T2_Tabah", "T2_Jujur", "T3_Tabah", "T3_Jujur",
+        "T4_Tabah", "T4_Jujur", "T5_Tabah", "T5_Jujur", "T6_Tabah", "T6_Jujur"
+    ];
+    
+    let academicDatabase = [];
+    
+    function getSampleStudentsForClass(className) {
+        let yearNum = className.split("_")[0];
+        let baseNames = [
+            { id: 1, name: "Ahmad Daniel Bin Abdullah" },
+            { id: 2, name: "Lim Wei Jie" },
+            { id: 3, name: "Nurul Aisyah Bt Mohd" },
+            { id: 4, name: "Tan Sze Hui" },
+            { id: 5, name: "Muhammad Izzat" },
+            { id: 6, name: "Chong Kar Yan" },
+            { id: 7, name: "Siti Nurhaliza Bt Ahmad" },
+            { id: 8, name: "Kumar A/L Rajan" },
+            { id: 9, name: "Wong Mei Ling" },
+            { id: 10, name: "Muhammad Faiz Bin Osman" }
+        ];
+        return baseNames.map(s => ({
+            id: s.id,
+            name: `${yearNum} - ${s.name}`,
+            marks: getDefaultMarks()
+        }));
+    }
+    
+    function getDefaultMarks() {
+        let marks = {};
+        subjects.forEach(s => marks[s] = 0);
+        return marks;
+    }
+    
+    function getOrCreateSession(year, examType, classId) {
+        let existing = academicDatabase.find(s => s.tahun === year && s.jenis === examType && s.kelas === classId);
+        if (existing) return existing;
+        let newSession = {
+            tahun: year,
+            jenis: examType,
+            kelas: classId,
+            students: getSampleStudentsForClass(classId)
+        };
+        academicDatabase.push(newSession);
+        return newSession;
+    }
+    
+    let currentRole = "admin";
+    let currentYear = "2025";
+    let currentExamType = "mid";
+    let currentClassId = "T1_Tabah";
+    let currentSessionData = null;
+    let selectedSubjectForTeacher = "BM";
+    
+    function saveCurrentSession() {
+        if (currentSessionData) {
+            let index = academicDatabase.findIndex(s => 
+                s.tahun === currentYear && s.jenis === currentExamType && s.kelas === currentClassId);
+            if (index !== -1) {
+                academicDatabase[index] = currentSessionData;
+            } else {
+                academicDatabase.push(currentSessionData);
+            }
+            localStorage.setItem("saps_academic_db_12classes", JSON.stringify(academicDatabase));
+        }
+    }
+    
+    function loadSession(year, examType, classId) {
+        let session = getOrCreateSession(year, examType, classId);
+        currentSessionData = session;
+        currentYear = year;
+        currentExamType = examType;
+        currentClassId = classId;
+        renderAll();
+        updateClassDisplay();
+    }
+    
+    function updateClassDisplay() {
+        let classMap = {
+            "T1_Tabah": "Tahun 1 - Tabah", "T1_Jujur": "Tahun 1 - Jujur",
+            "T2_Tabah": "Tahun 2 - Tabah", "T2_Jujur": "Tahun 2 - Jujur",
+            "T3_Tabah": "Tahun 3 - Tabah", "T3_Jujur": "Tahun 3 - Jujur",
+            "T4_Tabah": "Tahun 4 - Tabah", "T4_Jujur": "Tahun 4 - Jujur",
+            "T5_Tabah": "Tahun 5 - Tabah", "T5_Jujur": "Tahun 5 - Jujur",
+            "T6_Tabah": "Tahun 6 - Tabah", "T6_Jujur": "Tahun 6 - Jujur"
+        };
+        document.getElementById("activeClassDisplay").innerHTML = `Kelas aktif: ${classMap[currentClassId] || currentClassId}`;
+    }
+    
+    function getGradeAndStatus(mark) {
+        if (mark >= 82) return { grade: "A", status: "LULUS" };
+        if (mark >= 66) return { grade: "B", status: "LULUS" };
+        if (mark >= 50) return { grade: "C", status: "LULUS" };
+        if (mark >= 35) return { grade: "D", status: "LULUS" };
+        if (mark >= 20) return { grade: "E", status: "GAGAL" };
+        return { grade: "F", status: "GAGAL" };
+    }
+    
+    function computeStudentStats(studentsArr) {
+        let enriched = studentsArr.map(s => {
+            let total = subjects.reduce((sum, sub) => sum + (s.marks[sub] || 0), 0);
+            let avg = total / subjects.length;
+            return { ...s, total, avg: parseFloat(avg.toFixed(1)) };
+        });
+        enriched.sort((a,b) => b.total - a.total);
+        let rankMap = new Map();
+        enriched.forEach((s, idx) => rankMap.set(s.id, idx+1));
+        return studentsArr.map(s => {
+            let found = enriched.find(e => e.id === s.id);
+            return { ...s, total: found.total, avg: found.avg, rank: rankMap.get(s.id) };
+        });
+    }
+    
+    function computeSubjectAnalytics(studentsArr) {
+        let analytics = {};
+        subjects.forEach(sub => {
+            let counts = { A:0, B:0, C:0, D:0, E:0, F:0 };
+            let totalPoints = 0;
+            studentsArr.forEach(s => {
+                let mark = s.marks[sub];
+                let grade = getGradeAndStatus(mark).grade;
+                counts[grade]++;
+                let point = grade === 'A' ? 4 : grade === 'B' ? 3 : grade === 'C' ? 2 : grade === 'D' ? 1 : 0;
+                totalPoints += point;
+            });
+            let totalStudents = studentsArr.length;
+            let lulusCount = counts.A + counts.B + counts.C + counts.D;
+            let lulusPeratus = totalStudents ? ((lulusCount/totalStudents)*100).toFixed(1) : 0;
+            let gps = totalStudents ? (totalPoints / totalStudents).toFixed(2) : 0;
+            analytics[sub] = { counts, lulusPeratus, gps };
+        });
+        return analytics;
+    }
+    
+    function getOverallClassStats(studentsArr) {
+        let analytics = computeSubjectAnalytics(studentsArr);
+        let totalGps = 0;
+        subjects.forEach(s => { totalGps += parseFloat(analytics[s].gps); });
+        let classAverageGPS = (totalGps / subjects.length).toFixed(2);
+        let allStudentsPassing = studentsArr.filter(s => {
+            return subjects.every(sub => getGradeAndStatus(s.marks[sub]).status === "LULUS");
+        }).length;
+        let overallPassPercent = studentsArr.length ? ((allStudentsPassing/studentsArr.length)*100).toFixed(1) : 0;
+        return { classAverageGPS, overallPassPercent, totalStudents: studentsArr.length };
+    }
+    
+    function refreshCurrentSession() {
+        if (currentSessionData) {
+            let computed = computeStudentStats(currentSessionData.students);
+            currentSessionData.students = computed;
+        }
+    }
+    
+    function renderAll() {
+        if (!currentSessionData) return;
+        refreshCurrentSession();
+        renderDashboardStats();
+        renderActionBar();
+        renderMainTable();
+        renderFooterAnalysis();
+    }
+    
+    function renderDashboardStats() {
+        let studentsArr = currentSessionData.students;
+        let analytics = computeSubjectAnalytics(studentsArr);
+        let container = document.getElementById("dashboardStats");
+        let examLabel = currentExamType === "mid" ? "Pertengahan Semester" : "Akhir Semester";
+        let classLabel = currentClassId.replace("_", " - ");
+        let html = `<div class="stat-card"><h3><i class="fas fa-chalkboard-user"></i> Kelas: ${classLabel}</h3><div class="value">${studentsArr.length} Murid</div><div class="session-badge">Tahun ${currentYear} | ${examLabel}</div></div>`;
+        subjects.forEach(sub => {
+            let data = analytics[sub];
+            html += `<div class="stat-card"><h3>${subjectFull[sub]} (${sub})</h3><div class="value">${data.lulusPeratus}%</div><div>GPS: ${data.gps} | Lulus: ${data.lulusPeratus}%</div></div>`;
+        });
+        container.innerHTML = html;
+    }
+    
+    function renderActionBar() {
+        let bar = document.getElementById("actionBar");
+        if (currentRole === "admin") {
+            bar.innerHTML = `
+                <button id="bulkUploadBtn" class="btn btn-secondary"><i class="fas fa-file-csv"></i> Muat Naik Pukal (CSV)</button>
+                <button id="addIndividualBtn" class="btn btn-secondary"><i class="fas fa-user-plus"></i> Tambah Pelajar</button>
+                <button id="deleteStudentBtn" class="btn btn-danger"><i class="fas fa-trash-alt"></i> Padam Pelajar</button>
+                <button id="exportExcelAdmin" class="btn btn-primary"><i class="fas fa-download"></i> Export Excel</button>
+                <span><i class="fas fa-database"></i> Admin - Akses Semua Kelas</span>
+            `;
+            document.getElementById("bulkUploadBtn")?.addEventListener("click", bulkUploadCSV);
+            document.getElementById("addIndividualBtn")?.addEventListener("click", addIndividualStudent);
+            document.getElementById("deleteStudentBtn")?.addEventListener("click", deleteStudentPrompt);
+            document.getElementById("exportExcelAdmin")?.addEventListener("click", () => exportToExcel());
+        } 
+        else if (currentRole === "subjectTeacher") {
+            bar.innerHTML = `
+                <div><i class="fas fa-book-open"></i> Mata Pelajaran: 
+                <select id="subjectSelectTeacher"><option value="BM">BM</option><option value="BI">BI</option><option value="BC">BC</option><option value="SN">SN</option><option value="MT">MT</option><option value="SEJ">SEJ</option></select>
+                </div>
+                <button id="saveSessionBtn" class="btn btn-primary"><i class="fas fa-save"></i> Simpan Markah</button>
+                <span><i class="fas fa-chalkboard"></i> Kelas: ${currentClassId.replace("_", " - ")} (${selectedSubjectForTeacher})</span>
+            `;
+            let subSelect = document.getElementById("subjectSelectTeacher");
+            if(subSelect) {
+                subSelect.value = selectedSubjectForTeacher;
+                subSelect.addEventListener("change", (e) => { selectedSubjectForTeacher = e.target.value; renderMainTable(); });
+            }
+            document.getElementById("saveSessionBtn")?.addEventListener("click", () => {
+                syncMarksFromSubjectTable();
+                saveCurrentSession();
+                renderAll();
+                alert("Markah untuk " + selectedSubjectForTeacher + " disimpan!");
+            });
+        } 
+        else if (currentRole === "classTeacher") {
+            bar.innerHTML = `
+                <button id="printReportBtn" class="btn btn-primary"><i class="fas fa-print"></i> Cetak Laporan Kelas</button>
+                <button id="exportExcelClass" class="btn btn-secondary"><i class="fas fa-file-excel"></i> Export Excel</button>
+                <span><i class="fas fa-chart-line"></i> Guru Kelas - ${currentClassId.replace("_", " - ")}</span>
+            `;
+            document.getElementById("printReportBtn")?.addEventListener("click", () => window.print());
+            document.getElementById("exportExcelClass")?.addEventListener("click", () => exportToExcel());
+        }
+    }
+    
+    function syncMarksFromSubjectTable() {
+        let rows = document.querySelectorAll("#tableBody tr");
+        rows.forEach(row => {
+            let studentId = parseInt(row.getAttribute("data-id"));
+            let student = currentSessionData.students.find(s => s.id === studentId);
+            if(student) {
+                let markInput = row.querySelector(".mark-input");
+                if(markInput) {
+                    let newMark = parseInt(markInput.value);
+                    if(!isNaN(newMark) && newMark >=0 && newMark <=100) {
+                        student.marks[selectedSubjectForTeacher] = newMark;
+                    }
+                }
+            }
+        });
+        refreshCurrentSession();
+    }
+    
+    function renderMainTable() {
+        let thead = document.getElementById("tableHeader");
+        let tbody = document.getElementById("tableBody");
+        let studentsArr = currentSessionData.students;
+        let isSubjectTeacher = (currentRole === "subjectTeacher");
+        let isClassTeacherAdmin = (currentRole === "admin" || currentRole === "classTeacher");
+        
+        let headers = ["No.", "Nama Pelajar"];
+        if(isClassTeacherAdmin) {
+            subjects.forEach(s => headers.push(`${s} (Mark/Gred)`));
+            headers.push("Jumlah", "Purata", "Kedudukan");
+        } else if(isSubjectTeacher) {
+            headers.push(`${selectedSubjectForTeacher} (Mark/Gred)`);
+        }
+        thead.innerHTML = `<tr>${headers.map(h => `<th>${h}</th>`).join('')}</tr>`;
+        
+        let rowsHtml = "";
+        studentsArr.forEach((stu, idx) => {
+            let row = `<tr data-id="${stu.id}">`;
+            row += `<td>${idx+1}</td><td class="student-name">${stu.name}</td>`;
+            if(isClassTeacherAdmin) {
+                subjects.forEach(sub => {
+                    let mark = stu.marks[sub];
+                    let grade = getGradeAndStatus(mark).grade;
+                    row += `<td>${mark} <span class="grade-badge">${grade}</span></td>`;
+                });
+                row += `<td>${stu.total}</td><td>${stu.avg}</td><td><strong>${stu.rank}</strong></td>`;
+            } else if(isSubjectTeacher) {
+                let currentMark = stu.marks[selectedSubjectForTeacher];
+                let gradeObj = getGradeAndStatus(currentMark);
+                row += `<td><input type="number" class="mark-input" value="${currentMark}" min="0" max="100" style="width:80px;"> <span class="grade-badge">${gradeObj.grade}</span></td>`;
+            }
+            row += `</tr>`;
+            rowsHtml += row;
+        });
+        tbody.innerHTML = rowsHtml;
+    }
+    
+    function renderFooterAnalysis() {
+        if(currentRole === "admin" || currentRole === "classTeacher") {
+            let studentsArr = currentSessionData.students;
+            let analytics = computeSubjectAnalytics(studentsArr);
+            let overall = getOverallClassStats(studentsArr);
+            let subHtml = `<div class="subject-breakdown"><h4>Analisis Gred & Peratus Lulus Mengikut Subjek</h4><table style="width:100%;"><thead><tr><th>Subjek</th><th>A</th><th>B</th><th>C</th><th>D</th><th>E</th><th>F</th><th>% Lulus</th><th>GPS</th></tr></thead><tbody>`;
+            subjects.forEach(sub => {
+                let data = analytics[sub];
+                subHtml += `<tr><td><strong>${sub}</strong></td><td>${data.counts.A}</td><td>${data.counts.B}</td><td>${data.counts.C}</td><td>${data.counts.D}</td><td>${data.counts.E}</td><td>${data.counts.F}</td><td>${data.lulusPeratus}%</td><td>${data.gps}</td></tr>`;
+            });
+            subHtml += `</tbody></table></div>`;
+            subHtml += `<div class="overall-widget"><h4>Ringkasan Kelas ${currentClassId.replace("_", " - ")}</h4><p>Peratus Lulus Kelas: ${overall.overallPassPercent}%</p><p>Gred Purata Kelas (GPK): ${overall.classAverageGPS}</p><p>Jumlah Murid: ${overall.totalStudents}</p></div>`;
+            document.getElementById("footerAnalysis").innerHTML = subHtml;
+        } else {
+            document.getElementById("footerAnalysis").innerHTML = `<div class="subject-breakdown"><i class="fas fa-lock"></i> Hanya Guru Kelas/Admin lihat analisis penuh.</div>`;
+        }
+    }
+    
+    function bulkUploadCSV() {
+        let input = document.createElement("input");
+        input.type = "file";
+        input.accept = ".csv";
+        input.onchange = e => {
+            let file = e.target.files[0];
+            let reader = new FileReader();
+            reader.onload = ev => {
+                let text = ev.target.result;
+                let rows = text.split("\n").slice(1);
+                rows.forEach(line => {
+                    let cols = line.split(",");
+                    if(cols.length >= 7) {
+                        let name = cols[0].trim();
+                        let marks = { BM:parseInt(cols[1]), BI:parseInt(cols[2]), BC:parseInt(cols[3]), SN:parseInt(cols[4]), MT:parseInt(cols[5]), SEJ:parseInt(cols[6]) };
+                        let existing = currentSessionData.students.find(s => s.name === name);
+                        if(existing) {
+                            subjects.forEach(sub => { if(!isNaN(marks[sub])) existing.marks[sub] = marks[sub]; });
+                        } else {
+                            let newId = Date.now() + Math.random();
+                            currentSessionData.students.push({ id: newId, name, marks });
+                        }
+                    }
+                });
+                refreshCurrentSession();
+                saveCurrentSession();
+                renderAll();
+                alert("Bulk upload selesai!");
+            };
+            reader.readAsText(file);
+        };
+        input.click();
+    }
+    
+    function addIndividualStudent() {
+        let name = prompt("Nama Pelajar Baru:");
+        if(!name) return;
+        let marks = getDefaultMarks();
+        let newId = Date.now();
+        currentSessionData.students.push({ id: newId, name, marks });
+        refreshCurrentSession();
+        saveCurrentSession();
+        renderAll();
+    }
+    
+    function deleteStudentPrompt() {
+        let nameQuery = prompt("Nama pelajar untuk dipadam:");
+        let idx = currentSessionData.students.findIndex(s => s.name.toLowerCase() === nameQuery?.toLowerCase());
+        if(idx !== -1) {
+            currentSessionData.students.splice(idx,1);
+            refreshCurrentSession();
+            saveCurrentSession();
+            renderAll();
+            alert("Pelajar dipadam.");
+        } else alert("Tidak dijumpai.");
+    }
+    
+    function exportToExcel() {
+        let studentsArr = currentSessionData.students;
+        let csvRows = [];
+        let headers = ["No","Nama Pelajar", ...subjects.map(s=>`${s} (Mark)`), ...subjects.map(s=>`${s} (Gred)`,"Jumlah","Purata","Kedudukan"];
+        csvRows.push(headers.join(","));
+        studentsArr.forEach((s,idx) => {
+            let marksArr = subjects.map(sub => s.marks[sub]);
+            let gradesArr = subjects.map(sub => getGradeAndStatus(s.marks[sub]).grade);
+            let row = [idx+1, s.name, ...marksArr, ...gradesArr, s.total, s.avg, s.rank];
+            csvRows.push(row.join(","));
+        });
+        let blob = new Blob([csvRows.join("\n")], {type:"text/csv"});
+        let link = document.createElement("a");
+        link.href = URL.createObjectURL(blob);
+        link.download = `Laporan_${currentClassId}_${currentYear}_${currentExamType}.csv`;
+        link.click();
+    }
+    
+    function loadPersistedDatabase() {
+        let stored = localStorage.getItem("saps_academic_db_12classes");
+        if(stored) {
+            academicDatabase = JSON.parse(stored);
+        }
+    }
+    
+    document.getElementById("applyRoleBtn").addEventListener("click", () => {
+        currentRole = document.getElementById("roleSelect").value;
+        renderAll();
+    });
+    
+    document.getElementById("loadSessionBtn").addEventListener("click", () => {
+        let newYear = document.getElementById("yearSelect").value;
+        let newExam = document.getElementById("examTypeSelect").value;
+        loadSession(newYear, newExam, currentClassId);
+        saveCurrentSession();
+    });
+    
+    document.getElementById("loadClassBtn").addEventListener("click", () => {
+        let newClass = document.getElementById("classSelect").value;
+        loadSession(currentYear, currentExamType, newClass);
+        saveCurrentSession();
+    });
+    
+    loadPersistedDatabase();
+    loadSession("2025", "mid", "T1_Tabah");
+</script>
+</body>
+</html>
